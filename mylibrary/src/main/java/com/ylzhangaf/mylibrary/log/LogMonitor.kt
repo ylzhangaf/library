@@ -1,64 +1,79 @@
 package com.ylzhangaf.mylibrary.log
 
-import android.util.Log
-
 object LogMonitor {
 
-    fun logV(content : Any) {
+    fun logV(content: Any) {
         log(LogType.V, content)
     }
 
-    fun logV(tag : String, content : Any) {
+    fun logV(tag: String, content: Any) {
         log(LogType.V, tag, content)
     }
 
-    fun logE(content : Any) {
+    fun logE(content: Any) {
         log(LogType.E, content)
     }
 
-    fun logE(tag : String, content : Any) {
+    fun logE(tag: String, content: Any) {
         log(LogType.E, tag, content)
     }
 
-    fun logI(content : Any) {
+    fun logI(content: Any) {
         log(LogType.I, content)
     }
 
-    fun logI(tag : String, content : Any) {
+    fun logI(tag: String, content: Any) {
         log(LogType.I, tag, content)
     }
 
-    fun logD(content : Any) {
+    fun logD(content: Any) {
         log(LogType.D, content)
     }
 
-    fun logD(tag : String, content : Any) {
+    fun logD(tag: String, content: Any) {
         log(LogType.D, tag, content)
     }
 
-    fun log(@LogType.TYPE type : Int , content : Any) {
+    fun log(@LogType.TYPE type: Int, content: Any) {
         log(type, LogManager.getInstance().getConfig().getGlobalTag(), content)
     }
 
-    fun log(@LogType.TYPE type : Int, tag : String, content : Any) {
+    fun log(@LogType.TYPE type: Int, tag: String, content: Any) {
         log(type, tag, content, LogManager.getInstance().getConfig())
     }
 
-    fun log(@LogType.TYPE type : Int, tag : String, content : Any, config : LogConfig) {
+    fun log(@LogType.TYPE type: Int, tag: String, content: Any, config: LogConfig) {
         if (!config.isEnable()) {
             return
         }
 
-        val contentStr = parseContent(content)
-        if (contentStr.isEmpty()) {
-            return
+        val strBuilder = StringBuilder()
+        if (config.isIncludeThread) {
+            val threadInfo = LogConfig.threadFormatter.format(Thread.currentThread(), config)
+            strBuilder.append("\nThreadInfo: $threadInfo")
         }
 
-        Log.println(type, tag, contentStr)
+        if (config.stackTraceDepth > 0) {
+            val stackTraceInfo = LogConfig.stackTraceFormatter.format(Throwable().stackTrace, config)
+            strBuilder.append("\nStackTraceInfo: \n$stackTraceInfo")
+        }
+
+        val contentStr = parseContent(content, config)
+        strBuilder.append("\nContent: $contentStr")
+
+        val printers = config.printers.ifEmpty { LogManager.getInstance().getPrinters() }
+        printers.forEach {
+            it.print(config, type, tag, strBuilder.toString())
+        }
     }
 
-    fun parseContent(contnet : Any) : String {
-        return "wdnmd"
+    private fun parseContent(content: Any, logConfig: LogConfig): String {
+        val jsonParser = logConfig.jsonParser
+        if (jsonParser != null) {
+            return jsonParser.toJson(content)
+        }
+
+        return content.toString()
     }
 
 }
