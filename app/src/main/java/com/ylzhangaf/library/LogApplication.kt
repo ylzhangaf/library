@@ -18,7 +18,10 @@ class LogApplication : Application() {
             override fun toJson(data: Any): String {
                 return Gson().toJson(data)
             }
-        }), mutableListOf(ConsolePrinter()))
+        }).setPrinters(mutableListOf(ConsolePrinter()))
+            .setStackTraceDepth(7)
+            .includeThread(true)
+            .addIgnorePackage("com.ylzhangaf.mylibrary.log"))
     }
 
 }

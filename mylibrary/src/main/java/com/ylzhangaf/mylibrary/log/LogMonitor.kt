@@ -59,9 +59,9 @@ object LogMonitor {
         }
 
         val contentStr = parseContent(content, config)
-        strBuilder.append("\nContent: $contentStr")
+        strBuilder.append("\nContent: \n$contentStr")
 
-        val printers = config.printers.ifEmpty { LogManager.getInstance().getPrinters() }
+        val printers = config.printers
         printers.forEach {
             it.print(config, type, tag, strBuilder.toString())
         }

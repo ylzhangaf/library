@@ -8,6 +8,7 @@ abstract class LogConfig {
 
     companion object {
         const val MAX_LEN = 512
+        const val DEFAULT_STACK_TRACE_DEPTH = 5
 
         val threadFormatter = ThreadFormatter()
         val stackTraceFormatter = StackTraceFormatter()
@@ -29,13 +30,30 @@ abstract class LogConfig {
         return true
     }
 
+    /**
+     * 是否包含线程日志
+     */
     var isIncludeThread : Boolean = false
 
-    var stackTraceDepth : Int = 5
+    /**
+     * 堆栈深度 默认为5
+     */
+    var stackTraceDepth : Int = DEFAULT_STACK_TRACE_DEPTH
 
+    /**
+     * json解析实体
+     */
     var jsonParser : JsonParser? = null
 
+    /**
+     * 日志打印器列表
+     */
     val printers = mutableListOf<LogPrinter>()
+
+    /**
+     * 忽略包名
+     */
+    val ignorePackages : MutableList<String> = mutableListOf()
 
     /**
      * 初始化json解析器
@@ -52,6 +70,17 @@ abstract class LogConfig {
 
     open fun setStackTraceDepth(stackTraceDepth : Int) : LogConfig {
         this.stackTraceDepth = stackTraceDepth
+        return this
+    }
+
+    open fun addIgnorePackage(ignorePackage : String) : LogConfig {
+        this.ignorePackages.takeIf { !it.contains(ignorePackage) }?.add(ignorePackage)
+        return this
+    }
+
+    open fun addIgnorePackages(ignorePackages : List<String>) : LogConfig {
+        this.ignorePackages.addAll(ignorePackages.filterNot { ignorePackage ->
+            this.ignorePackages.contains(ignorePackage) })
         return this
     }
 

@@ -17,9 +17,12 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<TextView>(R.id.tvew_log).setOnClickListener {
             LogMonitor.log(LogType.E, "ylzhangaf", "281864",
-                object : LogConfig() {}.injectJsonParser(LogManager.getInstance().getConfig().jsonParser)
-                    .includeThread(true).setPrinters(mutableListOf(ConsolePrinter()))
-                    .setStackTraceDepth(3))
+                object : LogConfig() {}
+                    .injectJsonParser(LogManager.getInstance().getConfig().jsonParser)
+                    .includeThread(true)
+                    .setPrinters(mutableListOf(ConsolePrinter()))
+                    .setStackTraceDepth(7)
+                    .addIgnorePackage("com.ylzhangaf.mylibrary.log"))
         }
     }
 }

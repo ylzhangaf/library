@@ -2,7 +2,7 @@ package com.ylzhangaf.mylibrary.log
 
 import com.ylzhangaf.mylibrary.log.printer.LogPrinter
 
-class LogManager private constructor(private val logConfig: LogConfig, private val logPrinters : MutableList<LogPrinter>) {
+class LogManager private constructor(private val logConfig: LogConfig) {
 
     companion object {
 
@@ -12,26 +12,14 @@ class LogManager private constructor(private val logConfig: LogConfig, private v
             return logManagerInstance
         }
 
-        fun init(logConfig: LogConfig, logPrinters: List<LogPrinter>?) {
-            logManagerInstance = LogManager(logConfig,logPrinters?.toMutableList() ?: mutableListOf())
+        fun init(logConfig: LogConfig) {
+            logManagerInstance = LogManager(logConfig)
         }
 
     }
 
     fun getConfig() : LogConfig {
         return logConfig
-    }
-
-    fun addPrinter(printer: LogPrinter) {
-        logPrinters.add(printer)
-    }
-
-    fun removePrinter(printer: LogPrinter) {
-        logPrinters.remove(printer)
-    }
-
-    fun getPrinters() : List<LogPrinter> {
-        return logPrinters
     }
 
 }
